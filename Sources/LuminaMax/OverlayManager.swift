@@ -15,6 +15,7 @@ class OverlayManager {
     private let fadeDuration: TimeInterval = 0.6  // Total fade time in seconds
     private var fadeStartFactor: Float = 1.0
     private var fadeStartTime: Date?
+    private var loopSessionID: UInt64 = 0
     
     private(set) var isActive: Bool = false {
         didSet {
@@ -56,6 +57,8 @@ class OverlayManager {
     func activate() {
         guard !isActive else { return }
         isActive = true
+        loopSessionID &+= 1
+        let sessionID = loopSessionID
         
         // Reset fade state — start from neutral
         currentFadeFactor = 1.0
@@ -66,7 +69,7 @@ class OverlayManager {
         }
         
         // Start polling for EDR readiness
-        pollForEDR()
+        pollForEDR(sessionID: sessionID)
     }
     
     func deactivate() {
@@ -75,6 +78,7 @@ class OverlayManager {
         // Fade out smoothly before tearing down
         // Set inactive IMMEDIATELY so polling/update loops stop
         isActive = false
+        loopSessionID &+= 1
         
         // Fade out smoothly before tearing down
         fadeToFactor(1.0) { [weak self] in
@@ -100,6 +104,8 @@ class OverlayManager {
     
     func updateForScreenChange() {
         guard isActive else { return }
+        loopSessionID &+= 1
+        let sessionID = loopSessionID
         
         stopFade()
         
@@ -126,7 +132,7 @@ class OverlayManager {
             createOverlay(for: screen)
         }
         
-        pollForEDR()
+        pollForEDR(sessionID: sessionID)
     }
     
     private func createOverlay(for screen: NSScreen) {
@@ -182,9 +188,11 @@ class OverlayManager {
     
     // MARK: - EDR Polling
     
-    private func pollForEDR() {
+    private func pollForEDR(sessionID: UInt64) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            guard let self = self, self.isActive else { return }
+            guard let self = self,
+                  self.isActive,
+                  self.loopSessionID == sessionID else { return }
             
             var anyReady = false
             for screen in NSScreen.screens {
@@ -199,20 +207,22 @@ class OverlayManager {
                 // EDR is ready — fade in smoothly to target brightness
                 self.updateTargetGamma()
                 // Continue monitoring
-                self.continuousGammaUpdate()
+                self.continuousGammaUpdate(sessionID: sessionID)
             } else {
                 // Keep polling
-                self.pollForEDR()
+                self.pollForEDR(sessionID: sessionID)
             }
         }
     }
     
-    private func continuousGammaUpdate() {
+    private func continuousGammaUpdate(sessionID: UInt64) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self, self.isActive else { return }
+            guard let self = self,
+                  self.isActive,
+                  self.loopSessionID == sessionID else { return }
             // Recalculate target in case EDR headroom changed
             self.updateTargetGamma()
-            self.continuousGammaUpdate()
+            self.continuousGammaUpdate(sessionID: sessionID)
         }
     }
     

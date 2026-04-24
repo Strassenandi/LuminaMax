@@ -4,6 +4,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     private var statusBarController: StatusBarController?
     private var overlayManager: OverlayManager?
+    private var screenParametersObserver: NSObjectProtocol?
+    private var globalKeyMonitor: Any?
+    private var localKeyMonitor: Any?
+
+    deinit {
+        cleanupMonitorsAndObservers()
+    }
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Check if the display supports XDR/EDR
@@ -27,31 +34,35 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         overlayManager = OverlayManager()
         
         // Initialize the status bar controller
-        statusBarController = StatusBarController(overlayManager: overlayManager!)
+        if let overlayManager {
+            statusBarController = StatusBarController(overlayManager: overlayManager)
+        }
         
         // Register for screen change notifications
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(screenParametersDidChange),
-            name: NSApplication.didChangeScreenParametersNotification,
-            object: nil
-        )
+        screenParametersObserver = NotificationCenter.default.addObserver(
+            forName: NSApplication.didChangeScreenParametersNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            self?.screenParametersDidChange(notification)
+        }
         
         // Register global keyboard shortcut (⌥⌘B)
-        NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
+        globalKeyMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
             self?.handleGlobalKeyEvent(event)
         }
-        NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
+        localKeyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { [weak self] event in
             self?.handleGlobalKeyEvent(event)
             return event
         }
     }
     
     func applicationWillTerminate(_ notification: Notification) {
+        cleanupMonitorsAndObservers()
         overlayManager?.deactivate()
     }
     
-    @objc private func screenParametersDidChange(_ notification: Notification) {
+    private func screenParametersDidChange(_ notification: Notification) {
         overlayManager?.updateForScreenChange()
         statusBarController?.updateEDRInfo()
     }
@@ -72,5 +83,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         alert.alertStyle = .warning
         alert.addButton(withTitle: "OK")
         alert.runModal()
+    }
+
+    private func cleanupMonitorsAndObservers() {
+        if let screenParametersObserver {
+            NotificationCenter.default.removeObserver(screenParametersObserver)
+            self.screenParametersObserver = nil
+        }
+
+        if let globalKeyMonitor {
+            NSEvent.removeMonitor(globalKeyMonitor)
+            self.globalKeyMonitor = nil
+        }
+
+        if let localKeyMonitor {
+            NSEvent.removeMonitor(localKeyMonitor)
+            self.localKeyMonitor = nil
+        }
     }
 }

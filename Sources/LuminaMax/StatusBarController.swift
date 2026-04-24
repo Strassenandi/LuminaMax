@@ -47,29 +47,32 @@ class StatusBarController {
         menu.addItem(NSMenuItem.separator())
         
         // EDR Info
-        edrInfoItem = NSMenuItem(title: "EDR Headroom: --", action: nil, keyEquivalent: "")
-        edrInfoItem?.isEnabled = false
-        menu.addItem(edrInfoItem!)
+        let edrInfoItem = NSMenuItem(title: "EDR Headroom: --", action: nil, keyEquivalent: "")
+        edrInfoItem.isEnabled = false
+        self.edrInfoItem = edrInfoItem
+        menu.addItem(edrInfoItem)
         updateEDRInfo()
         
         menu.addItem(NSMenuItem.separator())
         
         // Toggle
-        toggleItem = NSMenuItem(
+        let toggleItem = NSMenuItem(
             title: "Brightness Boost: Aus",
             action: #selector(toggleBrightness),
             keyEquivalent: "b"
         )
-        toggleItem?.keyEquivalentModifierMask = [.option, .command]
-        toggleItem?.target = self
-        menu.addItem(toggleItem!)
+        toggleItem.keyEquivalentModifierMask = [.option, .command]
+        toggleItem.target = self
+        self.toggleItem = toggleItem
+        menu.addItem(toggleItem)
         
         menu.addItem(NSMenuItem.separator())
         
         // Brightness label
-        brightnessLabel = NSMenuItem(title: "Intensität: 100%", action: nil, keyEquivalent: "")
-        brightnessLabel?.isEnabled = false
-        menu.addItem(brightnessLabel!)
+        let brightnessLabel = NSMenuItem(title: "Intensität: 100%", action: nil, keyEquivalent: "")
+        brightnessLabel.isEnabled = false
+        self.brightnessLabel = brightnessLabel
+        menu.addItem(brightnessLabel)
         
         // Brightness Slider
         let sliderItem = NSMenuItem()
