@@ -1,7 +1,7 @@
 import AppKit
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    
+
     private var statusBarController: StatusBarController?
     private var overlayManager: OverlayManager?
     private var screenParametersObserver: NSObjectProtocol?
@@ -11,7 +11,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     deinit {
         cleanupMonitorsAndObservers()
     }
-    
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Check if the display supports XDR/EDR
         guard let screen = NSScreen.main else {
@@ -21,7 +21,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             )
             return
         }
-        
+
         let potentialEDR = screen.maximumPotentialExtendedDynamicRangeColorComponentValue
         if potentialEDR <= 1.0 {
             showAlert(
@@ -29,15 +29,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 message: "Dein Display unterstützt kein Extended Dynamic Range (EDR). LuminaMax funktioniert nur mit XDR-Displays (MacBook Pro M1 Pro/Max oder neuer).\n\nPotentieller EDR-Wert: \(potentialEDR)"
             )
         }
-        
+
         // Initialize the overlay manager
         overlayManager = OverlayManager()
-        
+
         // Initialize the status bar controller
         if let overlayManager {
             statusBarController = StatusBarController(overlayManager: overlayManager)
         }
-        
+
         // Register for screen change notifications
         screenParametersObserver = NotificationCenter.default.addObserver(
             forName: NSApplication.didChangeScreenParametersNotification,
@@ -46,7 +46,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         ) { [weak self] notification in
             self?.screenParametersDidChange(notification)
         }
-        
+
         // Register global keyboard shortcut (⌥⌘B)
         globalKeyMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { [weak self] event in
             self?.handleGlobalKeyEvent(event)
@@ -56,17 +56,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return event
         }
     }
-    
+
     func applicationWillTerminate(_ notification: Notification) {
         cleanupMonitorsAndObservers()
         overlayManager?.deactivate()
     }
-    
+
     private func screenParametersDidChange(_ notification: Notification) {
         overlayManager?.updateForScreenChange()
         statusBarController?.updateEDRInfo()
     }
-    
+
     private func handleGlobalKeyEvent(_ event: NSEvent) {
         // ⌥⌘B (Option + Command + B)
         let modifierFlags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
@@ -75,7 +75,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             statusBarController?.updateToggleState()
         }
     }
-    
+
     private func showAlert(title: String, message: String) {
         let alert = NSAlert()
         alert.messageText = title
