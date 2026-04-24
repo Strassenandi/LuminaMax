@@ -3,74 +3,59 @@ client:
   file-system: device-agnostic
 tools: {}
 targets:
-  "LuminaMax-arm64-apple-macosx-debug.exe": ["<LuminaMax-arm64-apple-macosx-debug.exe>"]
-  "LuminaMax-arm64-apple-macosx-debug.module": ["<LuminaMax-arm64-apple-macosx-debug.module>"]
+  "LuminaMax-arm64-apple-macosx-release.exe": ["<LuminaMax-arm64-apple-macosx-release.exe>"]
+  "LuminaMax-arm64-apple-macosx-release.module": ["<LuminaMax-arm64-apple-macosx-release.module>"]
   "PackageStructure": ["<PackageStructure>"]
-  "main": ["<LuminaMax-arm64-apple-macosx-debug.exe>","<LuminaMax-arm64-apple-macosx-debug.module>"]
-  "test": ["<LuminaMax-arm64-apple-macosx-debug.exe>","<LuminaMax-arm64-apple-macosx-debug.module>"]
+  "main": ["<LuminaMax-arm64-apple-macosx-release.exe>","<LuminaMax-arm64-apple-macosx-release.module>"]
+  "test": ["<LuminaMax-arm64-apple-macosx-release.exe>","<LuminaMax-arm64-apple-macosx-release.module>"]
 default: "main"
 nodes:
   "/Users/fredericandreas/LuminaMax/Sources/LuminaMax/":
     is-directory-structure: true
     content-exclusion-patterns: [".git",".build"]
-  "/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax":
-    is-mutated: true
 commands:
-  "/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax-entitlement.plist":
-    tool: write-auxiliary-file
-    inputs: ["<entitlement-plist>","<com.apple.security.get-task-allow>"]
-    outputs: ["/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax-entitlement.plist"]
-    description: "Write auxiliary file /Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax-entitlement.plist"
-
-  "/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/sources":
+  "/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/sources":
     tool: write-auxiliary-file
     inputs: ["<sources-file-list>","/Users/fredericandreas/LuminaMax/Sources/LuminaMax/AppDelegate.swift","/Users/fredericandreas/LuminaMax/Sources/LuminaMax/MetalRenderer.swift","/Users/fredericandreas/LuminaMax/Sources/LuminaMax/OverlayManager.swift","/Users/fredericandreas/LuminaMax/Sources/LuminaMax/StatusBarController.swift","/Users/fredericandreas/LuminaMax/Sources/LuminaMax/main.swift"]
-    outputs: ["/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/sources"]
-    description: "Write auxiliary file /Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/sources"
+    outputs: ["/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/sources"]
+    description: "Write auxiliary file /Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/sources"
 
-  "/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.product/Objects.LinkFileList":
+  "/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.product/Objects.LinkFileList":
     tool: write-auxiliary-file
-    inputs: ["<link-file-list>","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/AppDelegate.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/MetalRenderer.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/OverlayManager.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/StatusBarController.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/main.swift.o"]
-    outputs: ["/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.product/Objects.LinkFileList"]
-    description: "Write auxiliary file /Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.product/Objects.LinkFileList"
+    inputs: ["<link-file-list>","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/AppDelegate.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/MetalRenderer.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/OverlayManager.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/StatusBarController.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/main.swift.o"]
+    outputs: ["/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.product/Objects.LinkFileList"]
+    description: "Write auxiliary file /Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.product/Objects.LinkFileList"
 
-  "/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt":
+  "/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/swift-version--58304C5D6DBC2206.txt":
     tool: write-auxiliary-file
     inputs: ["<swift-get-version>","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"]
-    outputs: ["/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"]
+    outputs: ["/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/swift-version--58304C5D6DBC2206.txt"]
     always-out-of-date: "true"
-    description: "Write auxiliary file /Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+    description: "Write auxiliary file /Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/swift-version--58304C5D6DBC2206.txt"
 
-  "<LuminaMax-arm64-apple-macosx-debug.exe>":
+  "<LuminaMax-arm64-apple-macosx-release.exe>":
     tool: phony
-    inputs: ["<LuminaMax-arm64-apple-macosx-debug.exe-CodeSigning>"]
-    outputs: ["<LuminaMax-arm64-apple-macosx-debug.exe>"]
+    inputs: ["/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax"]
+    outputs: ["<LuminaMax-arm64-apple-macosx-release.exe>"]
 
-  "<LuminaMax-arm64-apple-macosx-debug.module>":
+  "<LuminaMax-arm64-apple-macosx-release.module>":
     tool: phony
-    inputs: ["/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/AppDelegate.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/MetalRenderer.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/OverlayManager.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/StatusBarController.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/main.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/Modules/LuminaMax.swiftmodule"]
-    outputs: ["<LuminaMax-arm64-apple-macosx-debug.module>"]
+    inputs: ["/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/AppDelegate.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/MetalRenderer.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/OverlayManager.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/StatusBarController.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/main.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/Modules/LuminaMax.swiftmodule"]
+    outputs: ["<LuminaMax-arm64-apple-macosx-release.module>"]
 
-  "C.LuminaMax-arm64-apple-macosx-debug.exe":
+  "C.LuminaMax-arm64-apple-macosx-release.exe":
     tool: shell
-    inputs: ["/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/AppDelegate.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/MetalRenderer.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/OverlayManager.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/StatusBarController.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/main.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.product/Objects.LinkFileList"]
-    outputs: ["/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax"]
-    description: "Linking ./.build/arm64-apple-macosx/debug/LuminaMax"
-    args: ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-L","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug","-o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax","-module-name","LuminaMax","-Xlinker","-no_warn_duplicate_libraries","-emit-executable","-Xlinker","-alias","-Xlinker","_LuminaMax_main","-Xlinker","_main","-Xlinker","-rpath","-Xlinker","@loader_path","@/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.product/Objects.LinkFileList","-Xlinker","-rpath","-Xlinker","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-6.2/macosx","-target","arm64-apple-macosx13.0","-framework","AppKit","-framework","Metal","-framework","MetalKit","-framework","QuartzCore","-framework","CoreGraphics","-Xlinker","-add_ast_path","-Xlinker","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/Modules/LuminaMax.swiftmodule","-plugin-path","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-I","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g"]
+    inputs: ["/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/AppDelegate.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/MetalRenderer.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/OverlayManager.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/StatusBarController.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/main.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.product/Objects.LinkFileList"]
+    outputs: ["/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax"]
+    description: "Linking ./.build/arm64-apple-macosx/release/LuminaMax"
+    args: ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-L","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release","-o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax","-module-name","LuminaMax","-Xlinker","-no_warn_duplicate_libraries","-emit-executable","-Xlinker","-dead_strip","-Xlinker","-alias","-Xlinker","_LuminaMax_main","-Xlinker","_main","-Xlinker","-rpath","-Xlinker","@loader_path","@/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.product/Objects.LinkFileList","-Xlinker","-rpath","-Xlinker","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-6.2/macosx","-target","arm64-apple-macosx13.0","-framework","AppKit","-framework","Metal","-framework","MetalKit","-framework","QuartzCore","-framework","CoreGraphics","-plugin-path","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-I","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g"]
 
-  "C.LuminaMax-arm64-apple-macosx-debug.exe-entitlements":
+  "C.LuminaMax-arm64-apple-macosx-release.module":
     tool: shell
-    inputs: ["/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax-entitlement.plist"]
-    outputs: ["<LuminaMax-arm64-apple-macosx-debug.exe-CodeSigning>"]
-    description: "Applying debug entitlements to ./.build/arm64-apple-macosx/debug/LuminaMax"
-    args: ["codesign","--force","--sign","-","--entitlements","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax-entitlement.plist","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax"]
-
-  "C.LuminaMax-arm64-apple-macosx-debug.module":
-    tool: shell
-    inputs: ["/Users/fredericandreas/LuminaMax/Sources/LuminaMax/AppDelegate.swift","/Users/fredericandreas/LuminaMax/Sources/LuminaMax/MetalRenderer.swift","/Users/fredericandreas/LuminaMax/Sources/LuminaMax/OverlayManager.swift","/Users/fredericandreas/LuminaMax/Sources/LuminaMax/StatusBarController.swift","/Users/fredericandreas/LuminaMax/Sources/LuminaMax/main.swift","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/sources"]
-    outputs: ["/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/AppDelegate.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/MetalRenderer.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/OverlayManager.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/StatusBarController.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/main.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/Modules/LuminaMax.swiftmodule"]
+    inputs: ["/Users/fredericandreas/LuminaMax/Sources/LuminaMax/AppDelegate.swift","/Users/fredericandreas/LuminaMax/Sources/LuminaMax/MetalRenderer.swift","/Users/fredericandreas/LuminaMax/Sources/LuminaMax/OverlayManager.swift","/Users/fredericandreas/LuminaMax/Sources/LuminaMax/StatusBarController.swift","/Users/fredericandreas/LuminaMax/Sources/LuminaMax/main.swift","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/swift-version--58304C5D6DBC2206.txt","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/sources"]
+    outputs: ["/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/AppDelegate.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/MetalRenderer.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/OverlayManager.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/StatusBarController.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/main.swift.o","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/Modules/LuminaMax.swiftmodule"]
     description: "Compiling Swift Module 'LuminaMax' (5 sources)"
-    args: ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-module-name","LuminaMax","-emit-dependencies","-emit-module","-emit-module-path","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/Modules/LuminaMax.swiftmodule","-output-file-map","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/output-file-map.json","-incremental","-c","@/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/LuminaMax.build/sources","-I","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/Modules","-target","arm64-apple-macosx13.0","-incremental","-enable-batch-mode","-serialize-diagnostics","-index-store-path","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/index/store","-Onone","-enable-testing","-j8","-DSWIFT_PACKAGE","-DDEBUG","-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE","-module-cache-path","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/debug/ModuleCache","-parseable-output","-Xfrontend","-entry-point-function-name","-Xfrontend","LuminaMax_main","-color-diagnostics","-swift-version","5","-plugin-path","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-I","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g","-Xcc","-isysroot","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk","-Xcc","-F","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-Xcc","-fPIC","-Xcc","-g","-package-name","luminamax"]
+    args: ["/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc","-module-name","LuminaMax","-emit-dependencies","-emit-module","-emit-module-path","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/Modules/LuminaMax.swiftmodule","-output-file-map","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/output-file-map.json","-whole-module-optimization","-num-threads","8","-c","@/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/LuminaMax.build/sources","-I","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/Modules","-target","arm64-apple-macosx13.0","-whole-module-optimization","-num-threads","8","-serialize-diagnostics","-O","-j8","-DSWIFT_PACKAGE","-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE","-module-cache-path","/Users/fredericandreas/LuminaMax/.build/arm64-apple-macosx/release/ModuleCache","-parseable-output","-Xfrontend","-entry-point-function-name","-Xfrontend","LuminaMax_main","-color-diagnostics","-swift-version","5","-plugin-path","/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing","-sdk","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk","-F","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-I","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-L","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib","-g","-Xcc","-isysroot","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.4.sdk","-Xcc","-F","-Xcc","/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks","-Xcc","-fPIC","-Xcc","-g","-package-name","luminamax"]
 
   "PackageStructure":
     tool: package-structure-tool
