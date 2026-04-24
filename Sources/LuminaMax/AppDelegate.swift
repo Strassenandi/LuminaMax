@@ -1,7 +1,6 @@
 import AppKit
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-
     private var statusBarController: StatusBarController?
     private var overlayManager: OverlayManager?
     private var screenParametersObserver: NSObjectProtocol?
@@ -70,7 +69,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func handleGlobalKeyEvent(_ event: NSEvent) {
         // ⌥⌘B (Option + Command + B)
         let modifierFlags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
-        if modifierFlags == [.option, .command] && event.keyCode == 11 { // 11 = 'B'
+        if modifierFlags == [.option, .command], event.keyCode == 11 { // 11 = 'B'
             overlayManager?.toggle()
             statusBarController?.updateToggleState()
         }

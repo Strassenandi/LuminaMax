@@ -2,7 +2,6 @@ import AppKit
 import MetalKit
 
 class MetalRenderer: MTKView, MTKViewDelegate {
-
     private let edrColorSpace = CGColorSpace(name: CGColorSpace.extendedLinearSRGB)
     private var metalCommandQueue: MTLCommandQueue?
 
@@ -38,20 +37,21 @@ class MetalRenderer: MTKView, MTKViewDelegate {
         delegate = self
         colorPixelFormat = .rgba16Float
         colorspace = edrColorSpace
-        preferredFramesPerSecond = 5  // Low FPS is fine, we just need to keep the layer alive
+        preferredFramesPerSecond = 5 // Low FPS is fine, we just need to keep the layer alive
 
         // Set the clear color to a very high EDR value
         // This is the key — clearColor values >> 1.0 signal EDR content
         updateClearColor()
 
         // Configure the underlying CAMetalLayer for EDR
-        if let metalLayer = self.layer as? CAMetalLayer {
+        if let metalLayer = layer as? CAMetalLayer {
             metalLayer.wantsExtendedDynamicRangeContent = true
             metalLayer.isOpaque = false
             metalLayer.pixelFormat = .rgba16Float
         }
     }
 
+    @available(*, unavailable)
     required init(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -73,7 +73,8 @@ class MetalRenderer: MTKView, MTKViewDelegate {
         guard let commandQueue = metalCommandQueue,
               let renderPassDescriptor = view.currentRenderPassDescriptor,
               let commandBuffer = commandQueue.makeCommandBuffer(),
-              let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor) else {
+              let renderEncoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
+        else {
             return
         }
 

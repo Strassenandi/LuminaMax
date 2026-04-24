@@ -2,17 +2,16 @@ import AppKit
 import Metal
 
 class OverlayManager {
-
     private var overlayWindows: [CGDirectDisplayID: NSWindow] = [:]
     private var renderers: [CGDirectDisplayID: MetalRenderer] = [:]
     private var baselineGammaTables: [CGDirectDisplayID: GammaTable] = [:]
 
     // Fade animation state
     private var fadeTimer: Timer?
-    private var currentFadeFactor: Float = 1.0  // Current interpolated gamma factor
-    private var targetFadeFactor: Float = 1.0   // Where we're fading to
-    private let fadeStepDuration: TimeInterval = 1.0 / 60.0  // ~60fps fade
-    private let fadeDuration: TimeInterval = 0.6  // Total fade time in seconds
+    private var currentFadeFactor: Float = 1.0 // Current interpolated gamma factor
+    private var targetFadeFactor: Float = 1.0 // Where we're fading to
+    private let fadeStepDuration: TimeInterval = 1.0 / 60.0 // ~60fps fade
+    private let fadeDuration: TimeInterval = 0.6 // Total fade time in seconds
     private var fadeStartFactor: Float = 1.0
     private var fadeStartTime: Date?
     private var loopSessionID: UInt64 = 0
@@ -82,22 +81,22 @@ class OverlayManager {
 
         // Fade out smoothly before tearing down
         fadeToFactor(1.0) { [weak self] in
-            guard let self = self else { return }
-            self.stopFade()
+            guard let self else { return }
+            stopFade()
 
             // Remove all overlay windows
-            for (_, window) in self.overlayWindows {
+            for (_, window) in overlayWindows {
                 window.orderOut(nil)
                 window.close()
             }
-            self.overlayWindows.removeAll()
-            self.renderers.removeAll()
+            overlayWindows.removeAll()
+            renderers.removeAll()
 
             // Restore gamma tables
-            for (displayId, table) in self.baselineGammaTables {
+            for (displayId, table) in baselineGammaTables {
                 table.restore(displayId: displayId)
             }
-            self.baselineGammaTables.removeAll()
+            baselineGammaTables.removeAll()
             CGDisplayRestoreColorSyncSettings()
         }
     }
@@ -140,7 +139,8 @@ class OverlayManager {
 
         // Save baseline gamma table before we modify anything
         if baselineGammaTables[displayId] == nil,
-           let table = GammaTable.captureCurrentGamma(displayId: displayId) {
+           let table = GammaTable.captureCurrentGamma(displayId: displayId)
+        {
             baselineGammaTables[displayId] = table
         }
 
@@ -190,9 +190,9 @@ class OverlayManager {
 
     private func pollForEDR(sessionID: UInt64) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            guard let self = self,
-                  self.isActive,
-                  self.loopSessionID == sessionID else { return }
+            guard let self,
+                  isActive,
+                  loopSessionID == sessionID else { return }
 
             var anyReady = false
             for screen in NSScreen.screens {
@@ -205,24 +205,24 @@ class OverlayManager {
 
             if anyReady {
                 // EDR is ready — fade in smoothly to target brightness
-                self.updateTargetGamma()
+                updateTargetGamma()
                 // Continue monitoring
-                self.continuousGammaUpdate(sessionID: sessionID)
+                continuousGammaUpdate(sessionID: sessionID)
             } else {
                 // Keep polling
-                self.pollForEDR(sessionID: sessionID)
+                pollForEDR(sessionID: sessionID)
             }
         }
     }
 
     private func continuousGammaUpdate(sessionID: UInt64) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self,
-                  self.isActive,
-                  self.loopSessionID == sessionID else { return }
+            guard let self,
+                  isActive,
+                  loopSessionID == sessionID else { return }
             // Recalculate target in case EDR headroom changed
-            self.updateTargetGamma()
-            self.continuousGammaUpdate(sessionID: sessionID)
+            updateTargetGamma()
+            continuousGammaUpdate(sessionID: sessionID)
         }
     }
 
@@ -264,28 +264,28 @@ class OverlayManager {
         fadeTimer?.invalidate()
 
         fadeTimer = Timer.scheduledTimer(withTimeInterval: fadeStepDuration, repeats: true) { [weak self] timer in
-            guard let self = self else {
+            guard let self else {
                 timer.invalidate()
                 return
             }
 
-            guard let startTime = self.fadeStartTime else {
+            guard let startTime = fadeStartTime else {
                 timer.invalidate()
                 completion?()
                 return
             }
 
             let elapsed = Date().timeIntervalSince(startTime)
-            var progress = Float(elapsed / self.fadeDuration)
+            var progress = Float(elapsed / fadeDuration)
 
             if progress >= 1.0 {
                 // Fade complete
                 progress = 1.0
                 timer.invalidate()
-                self.fadeTimer = nil
-                self.fadeStartTime = nil
-                self.currentFadeFactor = self.targetFadeFactor
-                self.applyGammaWithFactor(self.targetFadeFactor)
+                fadeTimer = nil
+                fadeStartTime = nil
+                currentFadeFactor = targetFadeFactor
+                applyGammaWithFactor(targetFadeFactor)
                 completion?()
                 return
             }
@@ -294,8 +294,8 @@ class OverlayManager {
             let t = progress
             let eased = t * t * (3.0 - 2.0 * t)
 
-            self.currentFadeFactor = self.fadeStartFactor + (self.targetFadeFactor - self.fadeStartFactor) * eased
-            self.applyGammaWithFactor(self.currentFadeFactor)
+            currentFadeFactor = fadeStartFactor + (targetFadeFactor - fadeStartFactor) * eased
+            applyGammaWithFactor(currentFadeFactor)
         }
     }
 

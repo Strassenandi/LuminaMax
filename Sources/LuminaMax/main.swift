@@ -1,6 +1,6 @@
 import AppKit
 
-// Create and configure the application
+/// Create and configure the application
 let app = NSApplication.shared
 app.setActivationPolicy(.accessory) // No dock icon
 

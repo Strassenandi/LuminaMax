@@ -1,7 +1,6 @@
 import AppKit
 
 class StatusBarController {
-
     private var statusItem: NSStatusItem
     private var overlayManager: OverlayManager
     private var brightnessSlider: NSSlider?
@@ -89,7 +88,7 @@ class StatusBarController {
 
         sliderView.addSubview(slider)
         sliderItem.view = sliderView
-        self.brightnessSlider = slider
+        brightnessSlider = slider
         menu.addItem(sliderItem)
 
         // Preset buttons
