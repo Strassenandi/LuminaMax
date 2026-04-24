@@ -1,0 +1,14 @@
+included:
+  - Sources
+
+excluded:
+  - .build
+  - .swiftpm
+
+only_rules:
+  - force_cast
+  - force_try
+  - force_unwrapping
+  - trailing_whitespace
+
+reporter: xcode

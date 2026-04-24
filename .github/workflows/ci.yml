@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+
+jobs:
+  quality:
+    name: Format and Lint
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Swift version
+        run: swift --version
+
+      - name: Install SwiftFormat and SwiftLint
+        run: |
+          if ! command -v swiftformat >/dev/null 2>&1; then
+            brew install swiftformat
+          fi
+          if ! command -v swiftlint >/dev/null 2>&1; then
+            brew install swiftlint
+          fi
+
+      - name: SwiftFormat (lint mode)
+        run: swiftformat --lint Sources --config .swiftformat
+
+      - name: SwiftLint
+        run: swiftlint lint --strict --config .swiftlint.yml
+
+  build:
+    name: Build
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Swift version
+        run: swift --version
+
+      - name: Build (debug)
+        run: swift build -c debug
+
+      - name: Run tests (if present)
+        run: |
+          if [ -d Tests ] && find Tests -name '*.swift' | grep -q .; then
+            swift test -c debug
+          else
+            echo "No Tests target found. Skipping swift test."
+          fi
+
+      - name: Build app bundle
+        run: |
+          chmod +x build.sh
+          ./build.sh
+
+      - name: Archive app bundle artifact
+        run: tar -czf LuminaMax.app.tar.gz LuminaMax.app
+
+      - name: Upload app bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LuminaMax-app-bundle
+          path: LuminaMax.app.tar.gz
