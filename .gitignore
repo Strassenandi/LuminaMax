@@ -1,2 +1,23 @@
+# SwiftPM build artifacts
 .build/
+
+# Generated app bundles
 *.app/
+
+# SwiftPM user/local state
+.swiftpm/
+
+# macOS metadata
+.DS_Store
+
+# Xcode user-specific files
+DerivedData/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcuserstate
+
+# Editor and temporary files
+.vscode/
+*.swp
+*.tmp
+*~
