@@ -16,6 +16,9 @@ class OverlayManager {
     private var fadeStartTime: Date?
     private var loopSessionID: UInt64 = 0
 
+    // Tracks how many renderers have fired their first-frame callback
+    private var pendingFirstFrames: Int = 0
+
     private(set) var isActive: Bool = false {
         didSet {
             UserDefaults.standard.set(isActive, forKey: "isActive")
@@ -61,20 +64,17 @@ class OverlayManager {
 
         // Reset fade state — start from neutral
         currentFadeFactor = 1.0
+        pendingFirstFrames = NSScreen.screens.count
 
         // Create overlays for all XDR-capable screens
         for screen in NSScreen.screens {
-            createOverlay(for: screen)
+            createOverlay(for: screen, sessionID: sessionID)
         }
-
-        // Start polling for EDR readiness
-        pollForEDR(sessionID: sessionID)
     }
 
     func deactivate() {
         guard isActive else { return }
 
-        // Fade out smoothly before tearing down
         // Set inactive IMMEDIATELY so polling/update loops stop
         isActive = false
         loopSessionID &+= 1
@@ -125,17 +125,19 @@ class OverlayManager {
 
         // Reset fade state
         currentFadeFactor = 1.0
+        pendingFirstFrames = NSScreen.screens.count
 
         // Recreate for current screens
         for screen in NSScreen.screens {
-            createOverlay(for: screen)
+            createOverlay(for: screen, sessionID: sessionID)
         }
-
-        pollForEDR(sessionID: sessionID)
     }
 
-    private func createOverlay(for screen: NSScreen) {
-        guard let displayId = screen.displayId else { return }
+    private func createOverlay(for screen: NSScreen, sessionID: UInt64) {
+        guard let displayId = screen.displayId else {
+            pendingFirstFrames -= 1
+            return
+        }
 
         // Save baseline gamma table before we modify anything
         if baselineGammaTables[displayId] == nil,
@@ -175,7 +177,25 @@ class OverlayManager {
         // Create the Metal EDR renderer (1x1 pixel MTKView)
         guard let renderer = MetalRenderer(screen: screen) else {
             print("Failed to create MetalRenderer for display: \(displayId)")
+            pendingFirstFrames -= 1
             return
+        }
+
+        // Once the Metal layer renders its first frame, EDR is guaranteed active —
+        // check immediately instead of waiting for a fixed poll interval.
+        renderer.onFirstFrameRendered = { [weak self] in
+            guard let self,
+                  isActive,
+                  loopSessionID == sessionID else { return }
+
+            pendingFirstFrames -= 1
+
+            // Wait until all screens have rendered at least one frame
+            guard pendingFirstFrames <= 0 else { return }
+
+            // EDR is now active — start the gamma boost
+            updateTargetGamma()
+            continuousGammaUpdate(sessionID: sessionID)
         }
 
         renderer.autoresizingMask = [.width, .height]
@@ -186,34 +206,7 @@ class OverlayManager {
         renderers[displayId] = renderer
     }
 
-    // MARK: - EDR Polling
-
-    private func pollForEDR(sessionID: UInt64) {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            guard let self,
-                  isActive,
-                  loopSessionID == sessionID else { return }
-
-            var anyReady = false
-            for screen in NSScreen.screens {
-                let edr = screen.maximumExtendedDynamicRangeColorComponentValue
-                if edr > 1.05 {
-                    anyReady = true
-                    break
-                }
-            }
-
-            if anyReady {
-                // EDR is ready — fade in smoothly to target brightness
-                updateTargetGamma()
-                // Continue monitoring
-                continuousGammaUpdate(sessionID: sessionID)
-            } else {
-                // Keep polling
-                pollForEDR(sessionID: sessionID)
-            }
-        }
-    }
+    // MARK: - Continuous Gamma Updates
 
     private func continuousGammaUpdate(sessionID: UInt64) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
