@@ -16,7 +16,7 @@ class OverlayManager {
     private var fadeStartTime: Date?
     private var loopSessionID: UInt64 = 0
 
-    // Tracks how many renderers have fired their first-frame callback
+    /// Tracks how many renderers have not yet fired their first-frame callback.
     private var pendingFirstFrames: Int = 0
 
     private(set) var isActive: Bool = false {
