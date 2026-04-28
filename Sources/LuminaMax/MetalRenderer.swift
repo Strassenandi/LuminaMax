@@ -4,6 +4,10 @@ import MetalKit
 class MetalRenderer: MTKView, MTKViewDelegate {
     private let edrColorSpace = CGColorSpace(name: CGColorSpace.extendedLinearSRGB)
     private var metalCommandQueue: MTLCommandQueue?
+    private var hasRenderedFirstFrame = false
+
+    /// Called once after the first frame has been successfully rendered to the Metal layer.
+    var onFirstFrameRendered: (() -> Void)?
 
     /// The EDR multiplier. Values > 1.0 trigger HDR brightness.
     var edrMultiplier: Float = 16.0 {
@@ -85,6 +89,14 @@ class MetalRenderer: MTKView, MTKViewDelegate {
             commandBuffer.present(drawable)
         }
         commandBuffer.commit()
+
+        // Notify after first successful frame so EDR polling can start immediately
+        if !hasRenderedFirstFrame {
+            hasRenderedFirstFrame = true
+            DispatchQueue.main.async { [weak self] in
+                self?.onFirstFrameRendered?()
+            }
+        }
     }
 
     func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
