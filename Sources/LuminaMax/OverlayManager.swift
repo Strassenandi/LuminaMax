@@ -83,21 +83,7 @@ class OverlayManager {
         fadeToFactor(1.0) { [weak self] in
             guard let self else { return }
             stopFade()
-
-            // Remove all overlay windows
-            for (_, window) in overlayWindows {
-                window.orderOut(nil)
-                window.close()
-            }
-            overlayWindows.removeAll()
-            renderers.removeAll()
-
-            // Restore gamma tables
-            for (displayId, table) in baselineGammaTables {
-                table.restore(displayId: displayId)
-            }
-            baselineGammaTables.removeAll()
-            CGDisplayRestoreColorSyncSettings()
+            self.cleanupOverlaysAndGamma()
         }
     }
 
@@ -107,21 +93,7 @@ class OverlayManager {
         let sessionID = loopSessionID
 
         stopFade()
-
-        // Remove old overlays
-        for (_, window) in overlayWindows {
-            window.orderOut(nil)
-            window.close()
-        }
-        overlayWindows.removeAll()
-        renderers.removeAll()
-
-        // Restore gamma before recreating
-        for (displayId, table) in baselineGammaTables {
-            table.restore(displayId: displayId)
-        }
-        baselineGammaTables.removeAll()
-        CGDisplayRestoreColorSyncSettings()
+        cleanupOverlaysAndGamma()
 
         // Reset fade state
         currentFadeFactor = 1.0
@@ -131,6 +103,21 @@ class OverlayManager {
         for screen in NSScreen.screens {
             createOverlay(for: screen, sessionID: sessionID)
         }
+    }
+
+    private func cleanupOverlaysAndGamma() {
+        for (_, window) in overlayWindows {
+            window.orderOut(nil)
+            window.close()
+        }
+        overlayWindows.removeAll()
+        renderers.removeAll()
+
+        for (displayId, table) in baselineGammaTables {
+            table.restore(displayId: displayId)
+        }
+        baselineGammaTables.removeAll()
+        CGDisplayRestoreColorSyncSettings()
     }
 
     private func createOverlay(for screen: NSScreen, sessionID: UInt64) {

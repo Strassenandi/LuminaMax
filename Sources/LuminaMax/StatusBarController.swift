@@ -94,16 +94,19 @@ class StatusBarController {
         // Preset buttons
         menu.addItem(NSMenuItem.separator())
 
-        let preset50 = NSMenuItem(title: "  50% Boost", action: #selector(setPreset50), keyEquivalent: "")
+        let preset50 = NSMenuItem(title: "  50% Boost", action: #selector(setPreset(_:)), keyEquivalent: "")
         preset50.target = self
+        preset50.representedObject = 0.5
         menu.addItem(preset50)
 
-        let preset75 = NSMenuItem(title: "  75% Boost", action: #selector(setPreset75), keyEquivalent: "")
+        let preset75 = NSMenuItem(title: "  75% Boost", action: #selector(setPreset(_:)), keyEquivalent: "")
         preset75.target = self
+        preset75.representedObject = 0.75
         menu.addItem(preset75)
 
-        let preset100 = NSMenuItem(title: "  100% Boost (Maximum)", action: #selector(setPreset100), keyEquivalent: "")
+        let preset100 = NSMenuItem(title: "  100% Boost (Maximum)", action: #selector(setPreset(_:)), keyEquivalent: "")
         preset100.target = self
+        preset100.representedObject = 1.0
         menu.addItem(preset100)
 
         menu.addItem(NSMenuItem.separator())
@@ -118,6 +121,10 @@ class StatusBarController {
         menu.addItem(quitItem)
 
         statusItem.menu = menu
+
+        // Sync UI with initial state
+        updateToggleState()
+        updateBrightnessLabel()
     }
 
     @objc private func toggleBrightness() {
@@ -131,21 +138,10 @@ class StatusBarController {
         updateBrightnessLabel()
     }
 
-    @objc private func setPreset50() {
-        overlayManager.brightnessNormalized = 0.5
-        brightnessSlider?.doubleValue = 0.5
-        updateBrightnessLabel()
-    }
-
-    @objc private func setPreset75() {
-        overlayManager.brightnessNormalized = 0.75
-        brightnessSlider?.doubleValue = 0.75
-        updateBrightnessLabel()
-    }
-
-    @objc private func setPreset100() {
-        overlayManager.brightnessNormalized = 1.0
-        brightnessSlider?.doubleValue = 1.0
+    @objc private func setPreset(_ sender: NSMenuItem) {
+        guard let value = sender.representedObject as? Double else { return }
+        overlayManager.brightnessNormalized = value
+        brightnessSlider?.doubleValue = value
         updateBrightnessLabel()
     }
 

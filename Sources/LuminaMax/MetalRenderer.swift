@@ -67,10 +67,6 @@ class MetalRenderer: MTKView, MTKViewDelegate {
         clearColor = MTLClearColorMake(hdrValue, hdrValue, hdrValue, 1.0)
     }
 
-    func screenUpdate(screen: NSScreen) {
-        updateClearColor()
-    }
-
     // MARK: - MTKViewDelegate
 
     func draw(in view: MTKView) {
