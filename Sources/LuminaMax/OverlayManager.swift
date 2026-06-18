@@ -6,6 +6,9 @@ class OverlayManager {
     private var renderers: [CGDirectDisplayID: MetalRenderer] = [:]
     private var baselineGammaTables: [CGDirectDisplayID: GammaTable] = [:]
 
+    /// Whether the boost is suspended due to system/display sleep
+    private var isSuspended: Bool = false
+
     // Fade animation state
     private var fadeTimer: Timer?
     private var currentFadeFactor: Float = 1.0 // Current interpolated gamma factor
@@ -58,6 +61,7 @@ class OverlayManager {
 
     func activate() {
         guard !isActive else { return }
+        isSuspended = false
         isActive = true
         loopSessionID &+= 1
         let sessionID = loopSessionID
@@ -74,6 +78,7 @@ class OverlayManager {
 
     func deactivate() {
         guard isActive else { return }
+        isSuspended = false
 
         // Set inactive IMMEDIATELY so polling/update loops stop
         isActive = false
@@ -88,7 +93,7 @@ class OverlayManager {
     }
 
     func updateForScreenChange() {
-        guard isActive else { return }
+        guard isActive, !isSuspended else { return }
         loopSessionID &+= 1
         let sessionID = loopSessionID
 
@@ -100,6 +105,40 @@ class OverlayManager {
         pendingFirstFrames = NSScreen.screens.count
 
         // Recreate for current screens
+        for screen in NSScreen.screens {
+            createOverlay(for: screen, sessionID: sessionID)
+        }
+    }
+
+    // MARK: - Sleep / Wake Handling
+
+    /// Suspend the boost before the system or displays go to sleep.
+    /// Tears down overlays and gamma without changing the user's active/inactive state.
+    func suspendForSleep() {
+        guard isActive, !isSuspended else { return }
+        isSuspended = true
+
+        // Invalidate the current session so continuousGammaUpdate stops
+        loopSessionID &+= 1
+
+        stopFade()
+        cleanupOverlaysAndGamma()
+    }
+
+    /// Resume the boost after the system or displays wake up.
+    /// Re-creates overlays and gamma if the boost was active before sleep.
+    func resumeAfterWake() {
+        guard isActive, isSuspended else { return }
+        isSuspended = false
+
+        loopSessionID &+= 1
+        let sessionID = loopSessionID
+
+        // Reset fade state — start from neutral
+        currentFadeFactor = 1.0
+        pendingFirstFrames = NSScreen.screens.count
+
+        // Recreate overlays for all screens
         for screen in NSScreen.screens {
             createOverlay(for: screen, sessionID: sessionID)
         }

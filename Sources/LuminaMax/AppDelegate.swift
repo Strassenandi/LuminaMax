@@ -6,6 +6,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var screenParametersObserver: NSObjectProtocol?
     private var globalKeyMonitor: Any?
     private var localKeyMonitor: Any?
+    private var willSleepObserver: NSObjectProtocol?
+    private var didWakeObserver: NSObjectProtocol?
+    private var screensDidSleepObserver: NSObjectProtocol?
+    private var screensDidWakeObserver: NSObjectProtocol?
 
     deinit {
         cleanupMonitorsAndObservers()
@@ -54,6 +58,47 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             self?.handleGlobalKeyEvent(event)
             return event
         }
+
+        // Register for sleep/wake notifications to suspend/resume the boost
+        let workspaceNC = NSWorkspace.shared.notificationCenter
+
+        willSleepObserver = workspaceNC.addObserver(
+            forName: NSWorkspace.willSleepNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.overlayManager?.suspendForSleep()
+        }
+
+        didWakeObserver = workspaceNC.addObserver(
+            forName: NSWorkspace.didWakeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            // Delay to allow displays to fully initialize after system wake
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                self?.overlayManager?.resumeAfterWake()
+            }
+        }
+
+        screensDidSleepObserver = workspaceNC.addObserver(
+            forName: NSWorkspace.screensDidSleepNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.overlayManager?.suspendForSleep()
+        }
+
+        screensDidWakeObserver = workspaceNC.addObserver(
+            forName: NSWorkspace.screensDidWakeNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            // Delay to allow displays to fully initialize after screen wake
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                self?.overlayManager?.resumeAfterWake()
+            }
+        }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -98,6 +143,24 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let localKeyMonitor {
             NSEvent.removeMonitor(localKeyMonitor)
             self.localKeyMonitor = nil
+        }
+
+        let workspaceNC = NSWorkspace.shared.notificationCenter
+        if let willSleepObserver {
+            workspaceNC.removeObserver(willSleepObserver)
+            self.willSleepObserver = nil
+        }
+        if let didWakeObserver {
+            workspaceNC.removeObserver(didWakeObserver)
+            self.didWakeObserver = nil
+        }
+        if let screensDidSleepObserver {
+            workspaceNC.removeObserver(screensDidSleepObserver)
+            self.screensDidSleepObserver = nil
+        }
+        if let screensDidWakeObserver {
+            workspaceNC.removeObserver(screensDidWakeObserver)
+            self.screensDidWakeObserver = nil
         }
     }
 }
