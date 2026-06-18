@@ -88,7 +88,7 @@ class OverlayManager {
         fadeToFactor(1.0) { [weak self] in
             guard let self else { return }
             stopFade()
-            self.cleanupOverlaysAndGamma()
+            cleanupOverlaysAndGamma()
         }
     }
 
